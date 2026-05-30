@@ -8,15 +8,17 @@ Rendering is done with headless Chromium, whose ICU/HarfBuzz pipeline handles Th
 correctly out of the box (where lighter PDF libraries fall short). The Sarabun font is
 bundled, so output is identical everywhere.
 
-![CI](https://github.com/peem/thai-document-generator/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/peemphetpimolzzz/thai-document-generator/actions/workflows/ci.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+
+![Invoice](docs/screenshots/invoice.png)
 
 ## Quick start
 
 > Prerequisites: **Docker and git only.**
 
 ```bash
-git clone https://github.com/peem/thai-document-generator.git
+git clone https://github.com/peemphetpimolzzz/thai-document-generator.git
 cd thai-document-generator
 
 # Render the bundled samples to ./output/*.pdf — no code required
