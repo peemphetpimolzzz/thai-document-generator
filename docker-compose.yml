@@ -1,0 +1,31 @@
+name: thai-document-generator
+
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      PORT: "8080"
+      MAX_CONCURRENCY: "2"
+    # Chromium needs more shared memory than Docker's 64MB default.
+    shm_size: "1gb"
+    init: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  # One-off renderer for the bundled samples. Not started by `up` (tools profile).
+  samples:
+    build: .
+    profiles: ["tools"]
+    shm_size: "1gb"
+    init: true
+    environment:
+      OUTPUT_DIR: /app/output
+    volumes:
+      - ./output:/app/output
+    command: ["node", "dist/cli/renderSamples.js"]

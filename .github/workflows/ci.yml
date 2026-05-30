@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t thai-doc:ci .
+
+      - name: Type-check and unit tests
+        run: |
+          docker run --rm thai-doc:ci npm run typecheck
+          docker run --rm thai-doc:ci npm run test:unit
+
+      - name: Integration test (Thai text survives the PDF round-trip)
+        run: docker run --rm --shm-size=1g --init thai-doc:ci npm run test:integration
+
+      - name: Render sample PDFs
+        run: |
+          mkdir -p output
+          docker run --rm --shm-size=1g --init -e OUTPUT_DIR=/app/output \
+            -v "$PWD/output:/app/output" thai-doc:ci node dist/cli/renderSamples.js
+
+      - name: Upload sample PDFs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sample-pdfs
+          path: output/*.pdf
+          if-no-files-found: ignore
