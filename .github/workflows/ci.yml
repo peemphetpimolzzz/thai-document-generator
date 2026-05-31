@@ -23,7 +23,8 @@ jobs:
 
       - name: Render sample PDFs
         run: |
-          mkdir -p output
+          # World-writable so the image's non-root user can write into the bind mount.
+          mkdir -p output && chmod 777 output
           docker run --rm --shm-size=1g --init -e OUTPUT_DIR=/app/output \
             -v "$PWD/output:/app/output" thai-doc:ci node dist/cli/renderSamples.js
 
