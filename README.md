@@ -74,6 +74,16 @@ this and uploads the sample PDFs as artifacts.
 | `MAX_CONCURRENCY` | `2` | Concurrent renders |
 | `FONT_DIR` | `/app/fonts` | Where the bundled fonts live |
 
+## Deploy to Azure
+
+The same container runs in the cloud on **Azure Container Apps**. Infrastructure is defined
+as Bicep in [`infra/`](infra/), and the [`Deploy (Azure)`](.github/workflows/deploy.yml)
+workflow builds the image in ACR and rolls out a new revision — authenticating with **OIDC
+federated credentials**, so no long-lived cloud secret is stored in the repo. The renderer
+runs stateless with 1 vCPU / 2 GiB for Chromium.
+
+See [`docs/deployment.md`](docs/deployment.md) for the full walkthrough.
+
 ## Fonts & licensing
 
 Sarabun and Noto Sans Thai are licensed under the SIL Open Font License 1.1
