@@ -93,6 +93,13 @@ curl -X POST "https://<appUrl>/documents/invoice" \
   --data @samples/invoice.sample.json -o invoice.pdf
 ```
 
+## Known limitations
+
+- **First revision is unhealthy until the real image is pushed** — the placeholder image
+  listens on `:80` while the probes target `:8080`. This is expected for the infra-only
+  bootstrap; the deploy workflow replaces the image and the service becomes healthy on the
+  next revision.
+
 ## Teardown
 
 ```bash
