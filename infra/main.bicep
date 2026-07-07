@@ -21,6 +21,9 @@ param appName string = 'thaidocgen'
 param location string = resourceGroup().location
 
 @description('Container image reference for the service. Leave as the placeholder for the first infra-only deploy; the deploy workflow updates it on each release.')
+// Bootstrap note: the placeholder image listens on :80, while ingress and the
+// probes below target 8080, so the first (infra-only) revision stays unhealthy
+// until the deploy workflow pushes the real image. That is expected.
 param apiImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
 var suffix = uniqueString(resourceGroup().id, appName)
