@@ -7,6 +7,10 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     res.status(400).json({ error: 'ValidationError', issues: err.issues });
     return;
   }
+  if (err instanceof SyntaxError && 'body' in err) {
+    res.status(400).json({ error: 'BadJson', message: 'Malformed JSON body.' });
+    return;
+  }
   console.error('[error]', err);
   res.status(500).json({ error: 'ServerError', message: 'Failed to render the document.' });
 };

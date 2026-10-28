@@ -5,9 +5,10 @@ export const documentsRouter = Router();
 
 function sendPdf(res: Response, pdf: Buffer, filename: string, inline: boolean): void {
   const disposition = inline ? 'inline' : 'attachment';
+  const safeFilename = filename.replace(/[^A-Za-z0-9._-]/g, '_');
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Length', pdf.length);
-  res.setHeader('Content-Disposition', `${disposition}; filename="${filename}"`);
+  res.setHeader('Content-Disposition', `${disposition}; filename="${safeFilename}"`);
   res.end(pdf);
 }
 

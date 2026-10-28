@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
+const isoDateString = z
+  .string()
+  .min(1)
+  .refine((v) => !Number.isNaN(Date.parse(v)), 'Invalid ISO date');
+
 export const reportSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().optional(),
   dateRange: z.string().optional(),
-  date: z.string(), // ISO date
+  date: isoDateString, // ISO date
   sections: z
     .array(
       z.object({

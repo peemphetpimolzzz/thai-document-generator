@@ -6,11 +6,16 @@ export const lineItemSchema = z.object({
   unitPrice: z.number().nonnegative(), // baht
 });
 
+const isoDateString = z
+  .string()
+  .min(1)
+  .refine((v) => !Number.isNaN(Date.parse(v)), 'Invalid ISO date');
+
 export const invoiceSchema = z.object({
   documentType: z.enum(['invoice', 'receipt']).default('invoice'),
   number: z.string().min(1),
-  issueDate: z.string(), // ISO date
-  dueDate: z.string().optional(),
+  issueDate: isoDateString, // ISO date
+  dueDate: isoDateString.optional(),
   seller: z.object({
     name: z.string().min(1),
     taxId: z.string().optional(),

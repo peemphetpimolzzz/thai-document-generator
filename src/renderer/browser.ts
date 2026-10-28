@@ -7,11 +7,18 @@ let browserPromise: Promise<Browser> | null = null;
 
 export async function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
-    browserPromise = puppeteer.launch({ headless: true, args: launchArgs });
-    const browser = await browserPromise;
-    browser.on('disconnected', () => {
-      browserPromise = null;
-    });
+    browserPromise = puppeteer
+      .launch({ headless: true, args: launchArgs })
+      .then((browser) => {
+        browser.on('disconnected', () => {
+          browserPromise = null;
+        });
+        return browser;
+      })
+      .catch((err) => {
+        browserPromise = null;
+        throw err;
+      });
   }
   return browserPromise;
 }

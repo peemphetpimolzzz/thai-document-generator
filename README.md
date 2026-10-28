@@ -8,10 +8,12 @@ Rendering is done with headless Chromium, whose ICU/HarfBuzz pipeline handles Th
 correctly out of the box (where lighter PDF libraries fall short). The Sarabun font is
 bundled, so output is identical everywhere.
 
-![CI](https://github.com/peemphetpimolzzz/thai-document-generator/actions/workflows/ci.yml/badge.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+[![CI](https://github.com/peemphetpimolzzz/thai-document-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/peemphetpimolzzz/thai-document-generator/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-![Invoice](docs/screenshots/invoice.png)
+| Tax Invoice / Receipt | Summary Report |
+|-----------------------|----------------|
+| ![Invoice](docs/screenshots/invoice.png) | ![Report](docs/screenshots/report.png) |
 
 ## Quick start
 
@@ -91,4 +93,4 @@ Sarabun and Noto Sans Thai are licensed under the SIL Open Font License 1.1
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — Part of [Peem Phetpimol's portfolio](https://peemphetpimolzzz.github.io) (Fullstack & Cloud Engineer · Test Automation).
