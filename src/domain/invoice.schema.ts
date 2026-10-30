@@ -12,10 +12,11 @@ const isoDateString = z
   .refine((v) => !Number.isNaN(Date.parse(v)), 'Invalid ISO date');
 
 export const invoiceSchema = z.object({
-  documentType: z.enum(['invoice', 'receipt']).default('invoice'),
+  documentType: z.enum(['invoice', 'receipt', 'quotation', 'tax-invoice']).default('invoice'),
   number: z.string().min(1),
   issueDate: isoDateString, // ISO date
   dueDate: isoDateString.optional(),
+  promptPayId: z.string().optional(),
   seller: z.object({
     name: z.string().min(1),
     taxId: z.string().optional(),

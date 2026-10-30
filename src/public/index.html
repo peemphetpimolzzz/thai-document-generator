@@ -1,0 +1,1733 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BillCraft TH — ระบบออกเอกสารธุรกิจ ใบเสนอราคา และใบกำกับภาษี PDF</title>
+  <style>
+    @font-face {
+      font-family: 'Sarabun';
+      src: url('/fonts/Sarabun-Regular.ttf') format('truetype'),
+           url('file:///home/peem-phetpimol/Projects/MySite/thai-document-generator/fonts/Sarabun-Regular.ttf') format('truetype'),
+           local('Sarabun'), local('Noto Sans Thai');
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sarabun';
+      src: url('/fonts/Sarabun-Bold.ttf') format('truetype'),
+           url('file:///home/peem-phetpimol/Projects/MySite/thai-document-generator/fonts/Sarabun-Bold.ttf') format('truetype'),
+           local('Sarabun Bold'), local('Noto Sans Thai Bold');
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Noto Sans Thai';
+      src: url('/fonts/NotoSansThai-Regular.ttf') format('truetype'),
+           url('file:///home/peem-phetpimol/Projects/MySite/thai-document-generator/fonts/NotoSansThai-Regular.ttf') format('truetype'),
+           local('Noto Sans Thai');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      --bg-app: #fafafa;
+      --bg-surface: #ffffff;
+      --bg-muted: #f4f4f5;
+      --bg-subtle: #f8fafc;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text-primary: #09090b;
+      --text-secondary: #52525b;
+      --text-muted: #71717a;
+      --accent: #09090b;
+      --accent-blue: #2563eb;
+      --accent-blue-soft: #eff6ff;
+      --emerald: #10b981;
+      --emerald-soft: #ecfdf5;
+      --amber: #f59e0b;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Sans Thai', 'Sarabun', sans-serif;
+      --font-doc: 'Sarabun', 'Noto Sans Thai', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    /* Top Navigation Bar */
+    .topbar {
+      height: 54px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      gap: 16px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 270px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: var(--text-primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .brand-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: var(--bg-muted);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    /* Document Type Segmented Switcher */
+    .doc-switcher {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-muted);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      gap: 2px;
+    }
+
+    .doc-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .doc-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .doc-tab.active {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(9, 9, 11, 0.06), 0 0 0 1px rgba(9, 9, 11, 0.04);
+    }
+
+    .doc-tab .code-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: #f4f4f5;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+
+    .doc-tab.active .code-tag {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+    }
+
+    /* Right Actions */
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .engine-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--emerald-soft);
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .engine-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--emerald);
+    }
+
+    .btn {
+      height: 32px;
+      padding: 0 11px;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--bg-muted);
+      border-color: var(--border-strong);
+    }
+
+    .btn-primary {
+      background: var(--text-primary);
+      color: #ffffff;
+      border-color: var(--text-primary);
+      font-weight: 600;
+      padding: 0 13px;
+      box-shadow: 0 1px 2px rgba(9, 9, 11, 0.12);
+    }
+
+    .btn-primary:hover {
+      background: #27272a;
+      border-color: #27272a;
+    }
+
+    /* Main Split Studio Layout */
+    .workspace {
+      display: grid;
+      grid-template-columns: 560px 1fr;
+      height: calc(100vh - 54px);
+      overflow: hidden;
+    }
+
+    /* Left Pane: Interactive Editor */
+    .editor-pane {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .editor-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fcfcfd;
+    }
+
+    .editor-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .preset-pills {
+      display: flex;
+      gap: 4px;
+    }
+
+    .preset-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .preset-pill.active {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+      font-weight: 600;
+      background: var(--bg-muted);
+    }
+
+    .editor-scroll {
+      padding: 12px 16px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      flex: 1;
+    }
+
+    /* Form Cards */
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-surface);
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 7px 12px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-head-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .card-body {
+      padding: 10px 12px;
+    }
+
+    .party-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .party-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: #fcfcfd;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .party-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .party-role-badge {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #f4f4f5;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .field-row-2 {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 6px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field label {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .input {
+      height: 27px;
+      padding: 0 8px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.12s ease;
+    }
+
+    .input:focus {
+      border-color: var(--text-primary);
+      box-shadow: 0 0 0 2px rgba(9, 9, 11, 0.05);
+    }
+
+    .input-mono {
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    /* Line Items Editor Table */
+    .items-editor-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .items-editor-table th {
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 5px 6px;
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
+    }
+
+    .items-editor-table td {
+      padding: 5px 5px;
+      border-bottom: 1px solid #f4f4f5;
+      vertical-align: middle;
+    }
+
+    .items-editor-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .num-col {
+      text-align: right !important;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+    }
+
+    .item-idx {
+      width: 22px;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* Summary & BahtText Strip */
+    .calc-strip {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .bahttext-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .bahttext-label {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .bahttext-value {
+      font-family: var(--font-doc);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .calc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .calc-table td {
+      padding: 2.5px 0;
+      color: var(--text-secondary);
+    }
+
+    .calc-table tr.calc-total td {
+      padding-top: 5px;
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .editor-footer {
+      padding: 9px 16px;
+      border-top: 1px solid var(--border);
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .api-route-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* Right Pane: Live A4 Paper Canvas */
+    .preview-pane {
+      background-color: #f4f4f5;
+      background-image: radial-gradient(#d4d4d8 1px, transparent 1px);
+      background-size: 16px 16px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-toolbar {
+      height: 40px;
+      padding: 0 20px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .preview-specs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spec-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .spec-item code {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      background: var(--bg-muted);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .canvas-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 24px;
+      overflow: auto;
+    }
+
+    /* Realistic A4 Sheet */
+    .a4-sheet {
+      width: 680px;
+      min-height: 760px;
+      background: #ffffff;
+      border-radius: 3px;
+      box-shadow:
+        0 18px 40px -12px rgba(9, 9, 11, 0.14),
+        0 2px 6px -1px rgba(9, 9, 11, 0.06),
+        0 0 0 1px rgba(9, 9, 11, 0.08);
+      padding: 28px 34px 26px;
+      font-family: var(--font-doc);
+      color: #18181b;
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .a4-top-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #09090b;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .doc-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid #18181b;
+    }
+
+    .seller-block {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .seller-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #09090b;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .seller-info {
+      font-size: 12px;
+      color: #3f3f46;
+      line-height: 1.5;
+    }
+
+    .seller-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #09090b;
+      line-height: 1.35;
+    }
+
+    .seller-tax-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+      font-size: 11.5px;
+      color: #27272a;
+    }
+
+    .branch-pill {
+      display: inline-block;
+      padding: 0 6px;
+      border-radius: 4px;
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+
+    .doc-meta-block {
+      text-align: right;
+      min-width: 215px;
+    }
+
+    .doc-copy-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      border: 1px solid #d4d4d8;
+      color: #3f3f46;
+      background: #fafafa;
+      margin-bottom: 3px;
+    }
+
+    .doc-title-th {
+      font-size: 20px;
+      font-weight: 700;
+      color: #09090b;
+      line-height: 1.25;
+    }
+
+    .doc-title-en {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #71717a;
+      letter-spacing: 0.06em;
+      font-family: var(--font-sans);
+      margin-bottom: 6px;
+    }
+
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .meta-table td {
+      padding: 1px 0;
+    }
+
+    .meta-table td:first-child {
+      color: #71717a;
+      text-align: right;
+      padding-right: 10px;
+    }
+
+    .meta-table td:last-child {
+      font-weight: 700;
+      color: #09090b;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Customer Section */
+    .customer-card {
+      margin: 12px 0;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      font-size: 12px;
+    }
+
+    .customer-card .label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 1px;
+    }
+
+    .buyer-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #09090b;
+    }
+
+    .customer-right {
+      text-align: right;
+      min-width: 175px;
+      font-size: 11.5px;
+      color: #3f3f46;
+    }
+
+    /* A4 Line Items Table */
+    .doc-items {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .doc-items thead th {
+      background: #09090b;
+      color: #ffffff;
+      font-weight: 700;
+      padding: 6px 10px;
+      text-align: left;
+      font-size: 11.5px;
+    }
+
+    .doc-items tbody td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e4e4e7;
+      color: #18181b;
+      vertical-align: top;
+    }
+
+    .doc-items .c-no {
+      width: 42px;
+      text-align: center;
+      color: #52525b;
+    }
+
+    .doc-items .c-num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .item-sub {
+      font-size: 10.5px;
+      color: #71717a;
+      margin-top: 1px;
+    }
+
+    /* Totals + PromptPay Lower Grid */
+    .doc-summary-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .left-summary-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .baht-words-box {
+      padding: 7px 12px;
+      background: #f4f4f5;
+      border: 1px solid #d4d4d8;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .baht-words-box span:first-child {
+      font-size: 10.5px;
+      color: #52525b;
+    }
+
+    .baht-words-box strong {
+      font-weight: 700;
+      color: #09090b;
+      font-size: 12.5px;
+    }
+
+    .payment-qr-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid #e4e4e7;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+
+    .qr-frame {
+      width: 56px;
+      height: 56px;
+      padding: 4px;
+      background: #ffffff;
+      border: 1px solid #d4d4d8;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .payment-details {
+      font-size: 11px;
+      color: #3f3f46;
+      line-height: 1.45;
+    }
+
+    .payment-details strong {
+      color: #09090b;
+      font-size: 11.5px;
+      display: block;
+    }
+
+    .doc-totals-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .doc-totals-table td {
+      padding: 3.5px 6px;
+    }
+
+    .doc-totals-table td:first-child {
+      color: #52525b;
+    }
+
+    .doc-totals-table td:last-child {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: #18181b;
+      white-space: nowrap;
+    }
+
+    .doc-totals-table tr.grand-row td {
+      margin-top: 4px;
+      padding: 7px 8px;
+      background: #09090b;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+
+    /* Signatures Footer */
+    .doc-signatures {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e4e4e7;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      text-align: center;
+      font-size: 11px;
+      color: #52525b;
+    }
+
+    .sig-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 62px;
+    }
+
+    .sig-line {
+      width: 100%;
+      border-top: 1px solid #a1a1aa;
+      padding-top: 4px;
+      margin-top: 6px;
+    }
+
+    .sig-role {
+      font-weight: 700;
+      color: #18181b;
+      font-size: 11px;
+    }
+
+    .sig-date {
+      font-size: 10px;
+      color: #71717a;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #09090b;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">฿</div>
+      <div class="brand-title-wrap">
+        <div class="brand-title">
+          <span>BillCraft TH</span>
+          <span class="brand-badge">Sarabun PDF v2.4</span>
+        </div>
+        <div class="brand-sub">ระบบออกเอกสารธุรกิจ ใบเสนอราคา และใบกำกับภาษี PDF</div>
+      </div>
+    </div>
+
+    <nav class="doc-switcher" aria-label="Document Type">
+      <button type="button" class="doc-tab active" data-doc-type="invoice" onclick="switchDocType('invoice')">
+        <span>ใบแจ้งหนี้</span>
+        <span class="code-tag">INVOICE</span>
+      </button>
+      <button type="button" class="doc-tab" data-doc-type="quotation" onclick="switchDocType('quotation')">
+        <span>ใบเสนอราคา</span>
+        <span class="code-tag">QUOTE</span>
+      </button>
+      <button type="button" class="doc-tab" data-doc-type="tax-invoice" onclick="switchDocType('tax-invoice')">
+        <span>ใบกำกับภาษี/ใบเสร็จ</span>
+        <span class="code-tag">TAX INV</span>
+      </button>
+      <button type="button" class="doc-tab" data-doc-type="report" onclick="switchDocType('report')">
+        <span>รายงานสรุปยอด</span>
+        <span class="code-tag">REPORT</span>
+      </button>
+    </nav>
+
+    <div class="top-actions">
+      <div class="engine-pill" title="Headless Chromium + HarfBuzz Thai Shaping Ready">
+        <span class="engine-dot"></span>
+        <span>Chromium HarfBuzz · พ.ศ. 2569</span>
+      </div>
+      <button type="button" class="btn" onclick="copyCurlCommand()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        <span>cURL / JSON</span>
+      </button>
+      <button type="button" class="btn btn-primary" onclick="exportPdfDocument()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>ดาวน์โหลด PDF (Export PDF)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Split-Screen Studio -->
+  <main class="workspace">
+    <!-- Left Pane: Document Form & Line Item Editor -->
+    <section class="editor-pane" aria-label="Document Editor">
+      <div class="editor-header">
+        <div class="editor-header-left">
+          <span class="section-tag">ตัวแก้ไขข้อมูลเอกสาร · Interactive Schema Editor</span>
+        </div>
+        <div class="preset-pills">
+          <button type="button" class="preset-pill active" onclick="loadSamplePreset('enterprise')">Enterprise SaaS</button>
+          <button type="button" class="preset-pill" onclick="loadSamplePreset('retail')">ร้านค้าปลีก สมหวัง</button>
+        </div>
+      </div>
+
+      <div class="editor-scroll">
+        <!-- 1. Parties (Seller & Buyer) -->
+        <div class="card">
+          <div class="card-head">
+            <span>1. ข้อมูลผู้ขายและลูกค้า (Seller &amp; Customer Tax Info)</span>
+            <span class="card-head-sub">เลขผู้เสียภาษี 13 หลัก · กรมสรรพากร</span>
+          </div>
+          <div class="card-body">
+            <div class="party-grid">
+              <!-- Seller -->
+              <div class="party-box">
+                <div class="party-box-header">
+                  <span>ผู้ขาย / ผู้ออกเอกสาร (Seller)</span>
+                  <span class="party-role-badge">HQ 00000</span>
+                </div>
+                <div class="field">
+                  <label>ชื่อบริษัท / นิติบุคคล</label>
+                  <input id="sellerName" class="input" value="บริษัท ตัวอย่าง เทคโนโลยี จำกัด" oninput="syncDocument()" />
+                </div>
+                <div class="field-row-2">
+                  <div class="field">
+                    <label>เลขประจำตัวผู้เสียภาษี</label>
+                    <input id="sellerTaxId" class="input input-mono" value="0105560000000" oninput="syncDocument()" />
+                  </div>
+                  <div class="field">
+                    <label>สาขา</label>
+                    <input id="sellerBranch" class="input" value="สำนักงานใหญ่" oninput="syncDocument()" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label>ที่อยู่จดทะเบียน</label>
+                  <input id="sellerAddress" class="input" value="99/9 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110" oninput="syncDocument()" />
+                </div>
+              </div>
+
+              <!-- Buyer -->
+              <div class="party-box">
+                <div class="party-box-header">
+                  <span>ลูกค้า / ผู้ซื้อ (Customer)</span>
+                  <span class="party-role-badge">B2B / VAT</span>
+                </div>
+                <div class="field">
+                  <label>ชื่อลูกค้า / บริษัท</label>
+                  <input id="buyerName" class="input" value="ร้านค้าปลีก สมหวัง (บริษัท สมหวัง โฮลดิ้ง จำกัด)" oninput="syncDocument()" />
+                </div>
+                <div class="field-row-2">
+                  <div class="field">
+                    <label>เลขประจำตัวผู้เสียภาษี</label>
+                    <input id="buyerTaxId" class="input input-mono" value="0107000000000" oninput="syncDocument()" />
+                  </div>
+                  <div class="field">
+                    <label>สาขา</label>
+                    <input id="buyerBranch" class="input" value="สำนักงานใหญ่" oninput="syncDocument()" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label>ที่อยู่ลูกค้า</label>
+                  <input id="buyerAddress" class="input" value="12 หมู่ 3 ตำบลในเมือง อำเภอเมือง จังหวัดเชียงใหม่ 50000" oninput="syncDocument()" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Document Metadata -->
+        <div class="card">
+          <div class="card-head">
+            <span>2. เลขที่เอกสารและกำหนดชำระ (Document Metadata)</span>
+            <span class="card-head-sub">ISO-8601 → พุทธศักราช (พ.ศ.)</span>
+          </div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field">
+                <label>เลขที่เอกสาร</label>
+                <input id="docNumber" class="input input-mono" value="INV-2026-0042" oninput="syncDocument()" />
+              </div>
+              <div class="field">
+                <label>วันที่ออกเอกสาร</label>
+                <input id="issueDate" type="date" class="input input-mono" value="2026-05-30" oninput="syncDocument()" />
+              </div>
+              <div class="field">
+                <label>วันครบกำหนดชำระ</label>
+                <input id="dueDate" type="date" class="input input-mono" value="2026-06-13" oninput="syncDocument()" />
+              </div>
+              <div class="field">
+                <label>PromptPay ID</label>
+                <input id="promptPayId" class="input input-mono" value="0105560000000" oninput="syncDocument()" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Line Items Table -->
+        <div class="card">
+          <div class="card-head">
+            <span>3. รายการสินค้าและบริการ (Line Items · Integer Satang Arithmetic)</span>
+            <button type="button" class="btn" style="height:23px; padding:0 8px; font-size:11px;" onclick="addLineItem()">+ เพิ่มรายการ</button>
+          </div>
+          <div class="card-body" style="padding: 4px 8px 8px;">
+            <table class="items-editor-table">
+              <thead>
+                <tr>
+                  <th style="width:24px;">#</th>
+                  <th>รายละเอียดรายการ (Description)</th>
+                  <th style="width:62px;" class="num-col">จำนวน</th>
+                  <th style="width:96px;" class="num-col">หน่วยละ (฿)</th>
+                  <th style="width:96px;" class="num-col">จำนวนเงิน</th>
+                  <th style="width:26px;"></th>
+                </tr>
+              </thead>
+              <tbody id="editorItemsBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Totals & Thai Baht Text -->
+        <div class="card">
+          <div class="card-head">
+            <span>4. สรุปยอดเงิน ส่วนลด และภาษีมูลค่าเพิ่ม (VAT 7% &amp; BahtText)</span>
+            <span class="card-head-sub">src/format/bahttext.ts</span>
+          </div>
+          <div class="card-body">
+            <div class="calc-strip">
+              <div class="bahttext-card">
+                <div>
+                  <div class="bahttext-label">
+                    <span>จำนวนเงินตัวอักษร (Thai Baht in Words)</span>
+                    <span class="brand-badge">bahtText()</span>
+                  </div>
+                  <div class="bahttext-value" id="editorBahtText">(ห้าหมื่นห้าพันหกร้อยสี่สิบบาทถ้วน)</div>
+                </div>
+                <div class="field-row-2" style="margin-top: 6px;">
+                  <div class="field">
+                    <label>ส่วนลด (บาท)</label>
+                    <input id="discountInput" type="number" class="input input-mono" value="1500" min="0" step="100" oninput="syncDocument()" />
+                  </div>
+                  <div class="field">
+                    <label>อัตราภาษี VAT (%)</label>
+                    <input id="vatRateInput" type="number" class="input input-mono" value="7" min="0" max="20" oninput="syncDocument()" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <table class="calc-table">
+                  <tr>
+                    <td>รวมเป็นเงิน (Subtotal)</td>
+                    <td class="num-col" id="editorSubtotal">53,500.00 ฿</td>
+                  </tr>
+                  <tr>
+                    <td>หักส่วนลด (Discount)</td>
+                    <td class="num-col" id="editorDiscount">-1,500.00 ฿</td>
+                  </tr>
+                  <tr>
+                    <td>ยอดหลังหักส่วนลด (Pre-VAT)</td>
+                    <td class="num-col" id="editorTaxable">52,000.00 ฿</td>
+                  </tr>
+                  <tr>
+                    <td>ภาษีมูลค่าเพิ่ม <span id="editorVatRateLabel">7</span>% (VAT)</td>
+                    <td class="num-col" id="editorVat">3,640.00 ฿</td>
+                  </tr>
+                  <tr class="calc-total">
+                    <td>จำนวนเงินรวมทั้งสิ้น</td>
+                    <td class="num-col" id="editorTotal">55,640.00 ฿</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <span>API Endpoint: <span class="api-route-pill" id="activeEndpointPill">POST /api/documents/invoice</span></span>
+        <span>Zod Validated · Satang Safe</span>
+      </div>
+    </section>
+
+    <!-- Right Pane: Live A4 Paper Preview -->
+    <section class="preview-pane" aria-label="Live A4 Document Preview">
+      <div class="preview-toolbar">
+        <div class="preview-specs">
+          <span class="spec-item">ตัวอย่างเอกสารจริงบนกระดาษ <code>A4 (210 × 297 mm)</code></span>
+          <span class="spec-item">ฟอนต์: <code>Sarabun 400/700</code></span>
+          <span class="spec-item">คำนวณสตางค์: <code>Integer Satang</code></span>
+        </div>
+        <div class="preview-specs">
+          <span class="spec-item">สถานะ: <strong style="color:#059669;">พร้อมพิมพ์ PDF (Print-Ready)</strong></span>
+        </div>
+      </div>
+
+      <div class="canvas-stage">
+        <article class="a4-sheet" id="a4PreviewSheet">
+          <div class="a4-top-accent"></div>
+
+          <div>
+            <!-- Document Header -->
+            <header class="doc-head">
+              <div class="seller-block">
+                <div class="seller-logo">ตย</div>
+                <div class="seller-info">
+                  <div class="seller-name" id="pvSellerName">บริษัท ตัวอย่าง เทคโนโลยี จำกัด</div>
+                  <div id="pvSellerAddress">99/9 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110</div>
+                  <div class="seller-tax-row">
+                    <span>เลขประจำตัวผู้เสียภาษีอากร: <strong id="pvSellerTaxId">0105560000000</strong></span>
+                    <span class="branch-pill" id="pvSellerBranch">สำนักงานใหญ่</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-meta-block">
+                <span class="doc-copy-badge">ต้นฉบับ / ORIGINAL</span>
+                <div class="doc-title-th" id="pvDocTitleTh">ใบแจ้งหนี้</div>
+                <div class="doc-title-en" id="pvDocTitleEn">INVOICE / BILLING NOTE</div>
+                <table class="meta-table">
+                  <tr>
+                    <td>เลขที่เอกสาร</td>
+                    <td id="pvDocNumber">INV-2026-0042</td>
+                  </tr>
+                  <tr>
+                    <td>วันที่ออกเอกสาร</td>
+                    <td id="pvIssueDate">30 พฤษภาคม 2569</td>
+                  </tr>
+                  <tr>
+                    <td>วันครบกำหนดชำระ</td>
+                    <td id="pvDueDate">13 มิถุนายน 2569</td>
+                  </tr>
+                </table>
+              </div>
+            </header>
+
+            <!-- Customer Box -->
+            <section class="customer-card">
+              <div>
+                <div class="label">ลูกค้า / ผู้ซื้อ (CUSTOMER / BILL TO)</div>
+                <div class="buyer-name" id="pvBuyerName">ร้านค้าปลีก สมหวัง (บริษัท สมหวัง โฮลดิ้ง จำกัด)</div>
+                <div id="pvBuyerAddress" style="color:#3f3f46; margin-top:1px;">12 หมู่ 3 ตำบลในเมือง อำเภอเมือง จังหวัดเชียงใหม่ 50000</div>
+              </div>
+              <div class="customer-right">
+                <div>เลขผู้เสียภาษี: <strong id="pvBuyerTaxId">0107000000000</strong></div>
+                <div>สาขา: <strong id="pvBuyerBranch">สำนักงานใหญ่</strong></div>
+                <div style="color:#64748b; margin-top:2px;">เงื่อนไขชำระเงิน: เครดิต 14 วัน</div>
+              </div>
+            </section>
+
+            <!-- Line Items Table -->
+            <table class="doc-items">
+              <thead>
+                <tr>
+                  <th class="c-no">ลำดับ</th>
+                  <th>รายการสินค้า / บริการ (Description)</th>
+                  <th class="c-num" style="width:72px;">จำนวน</th>
+                  <th class="c-num" style="width:110px;">หน่วยละ (บาท)</th>
+                  <th class="c-num" style="width:115px;">จำนวนเงิน (บาท)</th>
+                </tr>
+              </thead>
+              <tbody id="pvItemsBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+
+            <!-- Totals & PromptPay Section -->
+            <section class="doc-summary-grid">
+              <div class="left-summary-col">
+                <div class="baht-words-box">
+                  <span>จำนวนเงินตัวอักษร</span>
+                  <strong id="pvBahtText">(ห้าหมื่นห้าพันหกร้อยสี่สิบบาทถ้วน)</strong>
+                </div>
+
+                <div class="payment-qr-box">
+                  <div class="qr-frame" aria-label="PromptPay QR">
+                    <svg viewBox="0 0 36 36" width="100%" height="100%" fill="#09090b">
+                      <path d="M2 2h10v10H2V2zm2 2v6h6V4H4zm2 2h2v2H6V6zm18-4h10v10H24V2zm2 2v6h6V4h-6zm2 2h2v2h-2V6zM2 24h10v10H2V24zm2 2v6h6v-6H4zm2 2h2v2H6v-2zm10-24h2v4h-2V4zm4 2h2v4h-2V6zm-4 6h4v2h-4v-2zm-2 4h4v2h-4v-2zm6 0h2v6h-2v-6zm4-2h6v2h-6v-2zm4 4h4v4h-4v-4zm-12 6h2v4h-2v-4zm4 2h4v2h-4v-2zm6 0h2v6h-2v-6zm4 2h4v4h-4v-4zm-10 4h4v2h-4v-2z"/>
+                    </svg>
+                  </div>
+                  <div class="payment-details">
+                    <strong>ชำระเงินผ่าน PromptPay นิติบุคคล / โอนบัญชีธนาคาร</strong>
+                    <div>PromptPay Tax ID: <span id="pvPromptPayId" style="font-weight:700;">0105560000000</span></div>
+                    <div>ธ.กสิกรไทย (KBANK) · บจก. ตัวอย่าง เทคโนโลยี · 094-2-88412-0</div>
+                    <div style="color:#64748b;">หมายเหตุ: ชำระเงินภายใน 14 วันนับจากวันที่ในใบแจ้งหนี้</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <table class="doc-totals-table">
+                  <tr>
+                    <td>รวมเป็นเงิน (Subtotal)</td>
+                    <td id="pvSubtotal">53,500.00</td>
+                  </tr>
+                  <tr>
+                    <td>หักส่วนลด (Discount)</td>
+                    <td id="pvDiscount">1,500.00</td>
+                  </tr>
+                  <tr>
+                    <td>ยอดหลังหักส่วนลด (After Discount)</td>
+                    <td id="pvTaxable">52,000.00</td>
+                  </tr>
+                  <tr>
+                    <td>ภาษีมูลค่าเพิ่ม <span id="pvVatRate">7</span>% (VAT)</td>
+                    <td id="pvVat">3,640.00</td>
+                  </tr>
+                  <tr class="grand-row">
+                    <td>จำนวนเงินรวมทั้งสิ้น</td>
+                    <td id="pvTotal">55,640.00 บาท</td>
+                  </tr>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <!-- Signatures Footer -->
+          <footer class="doc-signatures">
+            <div class="sig-slot">
+              <div class="sig-line">
+                <div class="sig-role">ผู้รับวางบิล / ผู้รับเอกสาร</div>
+                <div class="sig-date">วันที่ ____/____/________</div>
+              </div>
+            </div>
+            <div class="sig-slot">
+              <span style="font-size:11px; color:#3f3f46; font-style:italic;">กิตติพงศ์ รัตนโชติ</span>
+              <div class="sig-line">
+                <div class="sig-role">ผู้จัดทำเอกสาร / ฝ่ายบัญชี</div>
+                <div class="sig-date">วันที่ 30 พฤษภาคม 2569</div>
+              </div>
+            </div>
+            <div class="sig-slot">
+              <span style="font-size:11px; color:#09090b; font-weight:700;">อนุมัติแล้ว · e-Tax Signature</span>
+              <div class="sig-line">
+                <div class="sig-role">ผู้รับเงิน / ผู้มีอำนาจลงนาม</div>
+                <div class="sig-date">ในนาม บริษัท ตัวอย่าง เทคโนโลยี จำกัด</div>
+              </div>
+            </div>
+          </footer>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox"></div>
+
+  <script>
+    const THAI_MONTHS = [
+      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+    ];
+    const DIGITS = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
+    const POSITIONS = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน'];
+
+    let currentDocType = 'invoice';
+    let lineItems = [
+      { description: 'ออกแบบและพัฒนาเว็บไซต์ระบบองค์กร (Full-Stack Web Platform)', quantity: 1, unitPrice: 35000 },
+      { description: 'ค่าดูแลระบบคลาวด์และสำรองฐานข้อมูลรายเดือน (Managed Cloud SLA)', quantity: 3, unitPrice: 4500 },
+      { description: 'อบรมการใช้งานระบบสำหรับเจ้าหน้าที่ปฏิบัติการ (ครึ่งวัน)', quantity: 2, unitPrice: 2500 }
+    ];
+
+    function readUnderMillion(n) {
+      const digits = String(n).split('').map(Number);
+      const len = digits.length;
+      let out = '';
+      for (let i = 0; i < len; i++) {
+        const d = digits[i];
+        const pos = len - 1 - i;
+        if (d === 0) continue;
+        if (pos === 1 && d === 1) {
+          out += 'สิบ';
+        } else if (pos === 1 && d === 2) {
+          out += 'ยี่สิบ';
+        } else if (pos === 0 && d === 1 && len > 1) {
+          out += 'เอ็ด';
+        } else {
+          out += DIGITS[d] + POSITIONS[pos];
+        }
+      }
+      return out;
+    }
+
+    function readInteger(n) {
+      if (n === 0) return DIGITS[0];
+      const groups = [];
+      let rem = n;
+      while (rem > 0) {
+        groups.push(rem % 1000000);
+        rem = Math.floor(rem / 1000000);
+      }
+      const parts = [];
+      for (let i = groups.length - 1; i >= 0; i--) {
+        const g = groups[i];
+        if (g > 0) parts.push(readUnderMillion(g));
+        if (i > 0) parts.push('ล้าน');
+      }
+      return parts.join('');
+    }
+
+    function toBahtText(satang) {
+      const total = Math.round(satang);
+      if (total === 0) return 'ศูนย์บาทถ้วน';
+      const baht = Math.floor(total / 100);
+      const st = total % 100;
+      const bahtPart = baht > 0 ? readInteger(baht) + 'บาท' : '';
+      const stPart = st === 0 ? 'ถ้วน' : readInteger(st) + 'สตางค์';
+      return bahtPart + stPart;
+    }
+
+    function formatTHB(satang) {
+      const baht = satang / 100;
+      return baht.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatThaiDate(iso) {
+      if (!iso) return '-';
+      const parts = iso.split('-').map(Number);
+      if (parts.length !== 3 || parts.some(isNaN)) return iso;
+      const [y, m, d] = parts;
+      return `${d} ${THAI_MONTHS[m - 1] || ''} ${y + 543}`;
+    }
+
+    function renderEditorItems() {
+      const tbody = document.getElementById('editorItemsBody');
+      tbody.innerHTML = lineItems.map((item, idx) => {
+        const amountSatang = Math.round(item.unitPrice * 100 * item.quantity);
+        return `
+          <tr>
+            <td class="item-idx">${idx + 1}</td>
+            <td>
+              <input class="input" value="${item.description.replace(/"/g, '&quot;')}" oninput="updateItem(${idx}, 'description', this.value)" />
+            </td>
+            <td>
+              <input type="number" class="input input-mono num-col" value="${item.quantity}" min="1" oninput="updateItem(${idx}, 'quantity', Number(this.value))" />
+            </td>
+            <td>
+              <input type="number" class="input input-mono num-col" value="${item.unitPrice}" min="0" step="100" oninput="updateItem(${idx}, 'unitPrice', Number(this.value))" />
+            </td>
+            <td class="num-col" style="font-size:11.5px; font-weight:600; padding-right:6px;">
+              ${formatTHB(amountSatang)}
+            </td>
+            <td>
+              <button type="button" class="icon-btn" title="ลบรายการ" onclick="removeLineItem(${idx})">✕</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateItem(idx, key, val) {
+      if (!lineItems[idx]) return;
+      lineItems[idx][key] = key === 'description' ? val : (Number.isFinite(val) ? val : 0);
+      renderEditorItems();
+      syncDocument(false);
+    }
+
+    function addLineItem() {
+      lineItems.push({ description: 'บริการให้คำปรึกษาสถาปัตยกรรมระบบคลาวด์', quantity: 1, unitPrice: 5000 });
+      renderEditorItems();
+      syncDocument(false);
+    }
+
+    function removeLineItem(idx) {
+      if (lineItems.length <= 1) return;
+      lineItems.splice(idx, 1);
+      renderEditorItems();
+      syncDocument(false);
+    }
+
+    function switchDocType(type) {
+      currentDocType = type;
+      document.querySelectorAll('.doc-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.docType === type);
+      });
+      const meta = {
+        'invoice': { th: 'ใบแจ้งหนี้', en: 'INVOICE / BILLING NOTE', prefix: 'INV-2026-0042', route: 'POST /api/documents/invoice' },
+        'quotation': { th: 'ใบเสนอราคา', en: 'QUOTATION / PROPOSAL', prefix: 'QT-2026-0118', route: 'POST /api/documents/invoice' },
+        'tax-invoice': { th: 'ใบกำกับภาษี / ใบเสร็จรับเงิน', en: 'TAX INVOICE / RECEIPT', prefix: 'TAX-2026-0095', route: 'POST /api/documents/invoice' },
+        'report': { th: 'รายงานสรุปยอดขายประจำเดือน', en: 'EXECUTIVE SUMMARY REPORT', prefix: 'RPT-2026-05', route: 'POST /api/documents/report' }
+      }[type];
+      document.getElementById('pvDocTitleTh').textContent = meta.th;
+      document.getElementById('pvDocTitleEn').textContent = meta.en;
+      document.getElementById('docNumber').value = meta.prefix;
+      document.getElementById('activeEndpointPill').textContent = meta.route;
+      syncDocument(false);
+    }
+
+    function loadSamplePreset(preset) {
+      document.querySelectorAll('.preset-pill').forEach((el, i) => {
+        el.classList.toggle('active', (preset === 'enterprise' && i === 0) || (preset === 'retail' && i === 1));
+      });
+      if (preset === 'retail') {
+        document.getElementById('buyerName').value = 'ร้านค้าปลีก สมหวัง';
+        document.getElementById('buyerTaxId').value = '0107000000000';
+        document.getElementById('buyerAddress').value = '12 หมู่ 3 ตำบลในเมือง อำเภอเมือง จังหวัดเชียงใหม่ 50000';
+      } else {
+        document.getElementById('buyerName').value = 'ร้านค้าปลีก สมหวัง (บริษัท สมหวัง โฮลดิ้ง จำกัด)';
+        document.getElementById('buyerTaxId').value = '0107000000000';
+        document.getElementById('buyerAddress').value = '12 หมู่ 3 ตำบลในเมือง อำเภอเมือง จังหวัดเชียงใหม่ 50000';
+      }
+      syncDocument();
+    }
+
+    function syncDocument(rerenderInputs = false) {
+      if (rerenderInputs) renderEditorItems();
+
+      const sellerName = document.getElementById('sellerName').value;
+      const sellerTaxId = document.getElementById('sellerTaxId').value;
+      const sellerBranch = document.getElementById('sellerBranch').value;
+      const sellerAddress = document.getElementById('sellerAddress').value;
+
+      const buyerName = document.getElementById('buyerName').value;
+      const buyerTaxId = document.getElementById('buyerTaxId').value;
+      const buyerBranch = document.getElementById('buyerBranch').value;
+      const buyerAddress = document.getElementById('buyerAddress').value;
+
+      const docNumber = document.getElementById('docNumber').value;
+      const issueDate = document.getElementById('issueDate').value;
+      const dueDate = document.getElementById('dueDate').value;
+      const promptPayId = document.getElementById('promptPayId').value;
+
+      const discountBaht = Math.max(0, Number(document.getElementById('discountInput').value) || 0);
+      const vatRate = Math.max(0, Number(document.getElementById('vatRateInput').value) || 0);
+
+      document.getElementById('pvSellerName').textContent = sellerName;
+      document.getElementById('pvSellerTaxId').textContent = sellerTaxId;
+      document.getElementById('pvSellerBranch').textContent = sellerBranch;
+      document.getElementById('pvSellerAddress').textContent = sellerAddress;
+
+      document.getElementById('pvBuyerName').textContent = buyerName;
+      document.getElementById('pvBuyerTaxId').textContent = buyerTaxId;
+      document.getElementById('pvBuyerBranch').textContent = buyerBranch;
+      document.getElementById('pvBuyerAddress').textContent = buyerAddress;
+
+      document.getElementById('pvDocNumber').textContent = docNumber;
+      document.getElementById('pvIssueDate').textContent = formatThaiDate(issueDate);
+      document.getElementById('pvDueDate').textContent = formatThaiDate(dueDate);
+      document.getElementById('pvPromptPayId').textContent = promptPayId;
+
+      let subtotalSatang = 0;
+      const pvRows = lineItems.map((item, idx) => {
+        const unitSatang = Math.round(item.unitPrice * 100);
+        const amountSatang = Math.round(unitSatang * item.quantity);
+        subtotalSatang += amountSatang;
+        return `
+          <tr>
+            <td class="c-no">${idx + 1}</td>
+            <td>${item.description}</td>
+            <td class="c-num">${item.quantity}</td>
+            <td class="c-num">${formatTHB(unitSatang)}</td>
+            <td class="c-num" style="font-weight:700;">${formatTHB(amountSatang)}</td>
+          </tr>
+        `;
+      }).join('');
+      document.getElementById('pvItemsBody').innerHTML = pvRows;
+
+      const discountSatang = Math.round(discountBaht * 100);
+      const taxableSatang = Math.max(0, subtotalSatang - discountSatang);
+      const vatSatang = Math.round((taxableSatang * vatRate) / 100);
+      const totalSatang = taxableSatang + vatSatang;
+      const words = `(${toBahtText(totalSatang)})`;
+
+      document.getElementById('editorSubtotal').textContent = `${formatTHB(subtotalSatang)} ฿`;
+      document.getElementById('editorDiscount').textContent = `-${formatTHB(discountSatang)} ฿`;
+      document.getElementById('editorTaxable').textContent = `${formatTHB(taxableSatang)} ฿`;
+      document.getElementById('editorVatRateLabel').textContent = String(vatRate);
+      document.getElementById('editorVat').textContent = `${formatTHB(vatSatang)} ฿`;
+      document.getElementById('editorTotal').textContent = `${formatTHB(totalSatang)} ฿`;
+      document.getElementById('editorBahtText').textContent = words;
+
+      document.getElementById('pvSubtotal').textContent = formatTHB(subtotalSatang);
+      document.getElementById('pvDiscount').textContent = formatTHB(discountSatang);
+      document.getElementById('pvTaxable').textContent = formatTHB(taxableSatang);
+      document.getElementById('pvVatRate').textContent = String(vatRate);
+      document.getElementById('pvVat').textContent = formatTHB(vatSatang);
+      document.getElementById('pvTotal').textContent = `${formatTHB(totalSatang)} บาท`;
+      document.getElementById('pvBahtText').textContent = words;
+    }
+
+    function buildInvoicePayload() {
+      return {
+        documentType: currentDocType === 'report' ? 'invoice' : currentDocType,
+        number: document.getElementById('docNumber').value,
+        issueDate: document.getElementById('issueDate').value,
+        dueDate: document.getElementById('dueDate').value,
+        promptPayId: document.getElementById('promptPayId').value,
+        seller: {
+          name: document.getElementById('sellerName').value,
+          taxId: document.getElementById('sellerTaxId').value,
+          branch: document.getElementById('sellerBranch').value,
+          address: document.getElementById('sellerAddress').value
+        },
+        buyer: {
+          name: document.getElementById('buyerName').value,
+          taxId: document.getElementById('buyerTaxId').value,
+          address: document.getElementById('buyerAddress').value
+        },
+        items: lineItems.map(i => ({
+          description: i.description,
+          quantity: Number(i.quantity),
+          unitPrice: Number(i.unitPrice)
+        })),
+        discount: Number(document.getElementById('discountInput').value) || 0,
+        vatRate: Number(document.getElementById('vatRateInput').value) || 7,
+        note: 'ชำระเงินภายใน 14 วันนับจากวันที่ในใบแจ้งหนี้'
+      };
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      box.textContent = msg;
+      box.style.display = 'inline-flex';
+      setTimeout(() => { box.style.display = 'none'; }, 3200);
+    }
+
+    async function copyCurlCommand() {
+      const payload = JSON.stringify(buildInvoicePayload(), null, 2);
+      const cmd = `curl -X POST http://localhost:8080/api/documents/invoice \\\n  -H 'Content-Type: application/json' \\\n  -d '${payload}' -o invoice.pdf`;
+      try {
+        await navigator.clipboard.writeText(cmd);
+        showToast('คัดลอกคำสั่ง cURL และ JSON Payload เรียบร้อยแล้ว');
+      } catch {
+        showToast('เตรียม JSON Payload สำหรับ POST /api/documents/invoice พร้อมแล้ว');
+      }
+    }
+
+    async function exportPdfDocument() {
+      const payload = buildInvoicePayload();
+      showToast('กำลังสร้างไฟล์ PDF ด้วย Chromium + Sarabun...');
+      try {
+        const res = await fetch('/api/documents/invoice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${payload.number}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast(`ดาวน์โหลด invoice-${payload.number}.pdf สำเร็จ!`);
+      } catch {
+        window.print();
+      }
+    }
+
+    renderEditorItems();
+    syncDocument(false);
+  </script>
+</body>
+</html>

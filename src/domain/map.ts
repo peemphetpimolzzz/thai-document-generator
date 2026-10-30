@@ -15,6 +15,7 @@ export interface InvoiceViewModel {
   number: string;
   issueDate: string;
   dueDate?: string;
+  promptPayId?: string;
   seller: InvoiceInput['seller'];
   buyer: InvoiceInput['buyer'];
   items: InvoiceLineViewModel[];
@@ -25,6 +26,13 @@ export interface InvoiceViewModel {
   total: number; // satang
   note?: string;
 }
+
+const DOCUMENT_TITLES: Record<InvoiceInput['documentType'], string> = {
+  invoice: 'ใบแจ้งหนี้',
+  receipt: 'ใบเสร็จรับเงิน',
+  quotation: 'ใบเสนอราคา',
+  'tax-invoice': 'ใบกำกับภาษี / ใบเสร็จรับเงิน',
+};
 
 /** Maps validated invoice input to a view model with all money pre-computed in satang. */
 export function mapInvoice(input: InvoiceInput): InvoiceViewModel {
@@ -47,10 +55,11 @@ export function mapInvoice(input: InvoiceInput): InvoiceViewModel {
 
   return {
     documentType: input.documentType,
-    documentTitle: input.documentType === 'receipt' ? 'ใบเสร็จรับเงิน' : 'ใบแจ้งหนี้',
+    documentTitle: DOCUMENT_TITLES[input.documentType] ?? 'ใบแจ้งหนี้',
     number: input.number,
     issueDate: input.issueDate,
     dueDate: input.dueDate,
+    promptPayId: input.promptPayId,
     seller: input.seller,
     buyer: input.buyer,
     items,
